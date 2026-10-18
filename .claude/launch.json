@@ -1,0 +1,1 @@
+{ "version": "0.0.1", "configurations": [ { "name": "life-of-game", "runtimeExecutable": "npx", "runtimeArgs": ["-y", "http-server@14.1.1", "-p", "8137", "-c-1", "."], "port": 8137 } ] }
