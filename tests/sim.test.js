@@ -118,6 +118,43 @@ test('full game: 20 rounds, 5 stage intros, no repeats, stats stay in range', ()
   assert(Object.values(g.players).every(p => !p.ready && p.money === CONFIG.start.money));
 });
 
+test("others' Health and Happiness never leave the host; mood and leader do", () => {
+  const g = fourPlayers();
+  Sim.start(g, 0);
+  let t = until(g, 'reveal', 0);
+  const v = Sim.viewFor(g, 'amy', t);
+  for (const p of v.players) {
+    assert(Number.isInteger(p.mood) && p.mood >= 0 && p.mood <= 5);
+    assert.strictEqual('health' in p, p.id === 'amy', p.id);
+    assert.strictEqual('happiness' in p, p.id === 'amy', p.id);
+  }
+  assert('leader' in v);
+  t = until(g, 'final', t);
+  assert(Sim.viewFor(g, 'amy', t).players.every(p => 'health' in p), 'all shown at the end');
+});
+
+test('mood faces use even thresholds', () => {
+  const m = (h, p) => Sim.moodOf({ health: h, happiness: p });
+  assert.deepStrictEqual([m(0, 0), m(16, 16), m(17, 17), m(33, 34), m(50, 50), m(67, 67), m(84, 84), m(85, 85), m(100, 100)], [0, 0, 1, 2, 2, 3, 4, 5, 5]);
+});
+
+test('colours: unique, first come first served, lobby only', () => {
+  const g = Sim.createGame();
+  Sim.addPlayer(g, 'a', 'a'); Sim.addPlayer(g, 'b', 'b');
+  assert.notStrictEqual(g.players.a.colour, g.players.b.colour);
+  assert(!Sim.setColour(g, 'b', g.players.a.colour));
+  assert(Sim.setColour(g, 'b', 'bubblegum'));
+  assert(!Sim.setColour(g, 'b', 'tartan'));
+});
+
+test('crown: nobody on a dead heat, the leader otherwise', () => {
+  const g = fourPlayers();
+  Sim.start(g, 0);
+  assert.strictEqual(Sim.leader(g), null);
+  g.players.cat.happiness += 5;
+  assert.strictEqual(Sim.leader(g), 'cat');
+});
+
 test('life score caps and floors money points', () => {
   assert.strictEqual(Sim.lifeScore({ money: 100000, health: 50, happiness: 50 }).money, 100);
   assert.strictEqual(Sim.lifeScore({ money: -100000, health: 50, happiness: 50 }).money, -40);

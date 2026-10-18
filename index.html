@@ -8,20 +8,23 @@
 <style>
 :root {
   --bg: #fff6ea; --ink: #2a1f17; --soft: #7a6a5c; --line: #eadccb; --card: #ffffff;
-  --accent: #ff5a36; --accent-ink: #ffffff; --good: #18a058; --bad: #d7413a; --gold: #f2a900;
-  --money: #18a058; --health: #e0475b; --happy: #f2a900;
-  --radius: 22px;
+  --accent: #ff5a36; --good: #18a058; --bad: #d7413a;
+  --money: #138a4b; --health: #d63a52; --happy: #b97e00;
+  --stage-bg: #d9f0d0; --stage-accent: #23a05a;
+  --sticker: 3px 4px 0 rgba(42, 31, 23, 0.18);
+  --sheet-h: 55%;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
 body {
   background: var(--bg); color: var(--ink);
-  font: 18px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  display: flex; justify-content: center;
+  font: 18px/1.45 ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior: none;
 }
-#app { width: 100%; max-width: 480px; min-height: 100%; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px; }
-h1 { font-size: 40px; line-height: 1.05; margin: 32px 0 4px; letter-spacing: -1px; }
-h2 { font-size: 26px; line-height: 1.15; margin: 0; }
+#app { min-height: 100%; }
+.page { width: 100%; max-width: 480px; min-height: 100vh; min-height: 100dvh; margin: 0 auto; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: 44px; line-height: 1.02; margin: 28px 0 4px; letter-spacing: -1px; font-weight: 900; }
+h2 { font-size: 24px; line-height: 1.2; margin: 0; font-weight: 900; }
 p { margin: 0; }
 .muted { color: var(--soft); }
 .small { font-size: 15px; }
@@ -30,61 +33,144 @@ p { margin: 0; }
 .stack { display: flex; flex-direction: column; gap: 12px; }
 .row { display: flex; gap: 10px; align-items: center; }
 button, input {
-  font: inherit; min-height: 56px; border-radius: 16px; border: 2px solid var(--line);
-  padding: 12px 18px; background: var(--card); color: var(--ink);
+  font: inherit; min-height: 56px; border-radius: 16px; border: 3px solid var(--ink);
+  padding: 12px 18px; background: var(--card); color: var(--ink); box-shadow: var(--sticker);
 }
-button { cursor: pointer; font-weight: 650; touch-action: manipulation; }
-button:active { transform: scale(0.98); }
-button:disabled { opacity: 0.45; cursor: default; transform: none; }
-button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-button.ghost { background: transparent; }
-input { width: 100%; }
-input.code { text-transform: uppercase; letter-spacing: 6px; text-align: center; font-weight: 700; }
-.card { background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: 0 6px 24px rgba(80, 50, 20, 0.08); }
+button { cursor: pointer; font-weight: 800; touch-action: manipulation; transition: transform 0.08s, box-shadow 0.08s; }
+button:active:not(:disabled) { transform: translate(2px, 3px); box-shadow: 1px 1px 0 rgba(42, 31, 23, 0.18); }
+button:disabled { cursor: default; }
+button.primary { background: var(--accent); color: #fff; }
+button.ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--soft); }
+button.boing { animation: boing 0.4s; }
+@keyframes boing { 30% { transform: scale(0.94); } 60% { transform: scale(1.04); } }
+input { width: 100%; box-shadow: none; }
+input.code { text-transform: uppercase; letter-spacing: 6px; text-align: center; font-weight: 900; }
+.card { background: var(--card); border: 3px solid var(--ink); border-radius: 20px; padding: 18px; box-shadow: var(--sticker); }
 .err { color: var(--bad); min-height: 1.4em; }
-
-/* stats bar */
-.stats { display: flex; justify-content: space-between; gap: 8px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.stat { flex: 1; background: var(--card); border-radius: 14px; padding: 8px 10px; text-align: center; }
-.stat .k { display: block; font-size: 12px; font-weight: 600; color: var(--soft); text-transform: uppercase; letter-spacing: 0.5px; }
-.stat.m .v { color: var(--money); } .stat.h .v { color: var(--health); } .stat.p .v { color: #b37d00; }
-
-.topline { display: flex; justify-content: space-between; color: var(--soft); font-size: 15px; font-weight: 600; }
-.timer { height: 8px; background: var(--line); border-radius: 8px; overflow: hidden; }
-.timer > i { display: block; height: 100%; background: var(--accent); width: 100%; transition: width 0.25s linear; }
-.opt { width: 100%; text-align: left; font-size: 19px; padding: 16px 18px; min-height: 64px; }
-.opt.chosen { border-color: var(--accent); background: #fff0eb; }
-.opt .def { display: block; font-size: 13px; font-weight: 600; color: var(--soft); }
-
-.ticks { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.tick { font-size: 15px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--card); color: var(--soft); }
-.tick.on { background: #e3f6ea; color: var(--good); }
-.tick.off { opacity: 0.5; }
-
+.badge { font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--line); color: var(--soft); }
+.badge.ok { background: #dcf5e5; color: var(--good); }
+.bigcode { font-size: 56px; font-weight: 900; letter-spacing: 10px; text-align: center; }
 .slots { display: grid; gap: 10px; }
-.slot { display: flex; justify-content: space-between; align-items: center; background: var(--card); border-radius: 16px; padding: 14px 18px; min-height: 56px; font-weight: 650; }
-.slot.empty { background: transparent; border: 2px dashed var(--line); color: var(--soft); font-weight: 500; }
-.badge { font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--line); color: var(--soft); }
-.badge.ok { background: #e3f6ea; color: var(--good); }
-.bigcode { font-size: 56px; font-weight: 800; letter-spacing: 10px; text-align: center; }
-
-.rev { display: flex; flex-direction: column; gap: 10px; }
-.revrow { background: var(--card); border-radius: 16px; padding: 14px 16px; opacity: 0; animation: pop 0.35s ease-out forwards; }
-.revrow .who { font-weight: 750; }
-.revrow .what { color: var(--soft); font-size: 16px; }
-.deltas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.d { font-size: 15px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--bg); }
-.d.up { color: var(--good); } .d.down { color: var(--bad); }
-.tag { font-size: 12px; font-weight: 700; color: var(--soft); background: var(--line); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
-@keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-.hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; }
-.emoji { font-size: 72px; line-height: 1; }
+.slot { display: flex; gap: 12px; align-items: center; background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 14px; min-height: 60px; font-weight: 800; box-shadow: var(--sticker); }
+.slot .badge { margin-left: auto; }
+.slot.empty { background: transparent; border: 3px dashed var(--line); color: var(--soft); font-weight: 600; box-shadow: none; }
+.slot svg { width: 40px; height: 40px; flex: none; }
+.swatches { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.sw { width: 48px; height: 48px; min-height: 48px; padding: 0; border-radius: 50%; }
+.sw.mine { outline: 4px solid var(--ink); outline-offset: 3px; }
+.sw.taken { opacity: 0.25; }
+.emoji { font-size: 64px; line-height: 1; }
 .rank { display: flex; align-items: center; gap: 12px; }
-.rank .n { font-size: 28px; font-weight: 800; width: 36px; color: var(--soft); }
-.rank .s { margin-left: auto; font-size: 24px; font-weight: 800; }
-.banner { position: fixed; left: 50%; top: 10px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 15px; z-index: 5; max-width: 92vw; }
+.rank .n { font-size: 26px; font-weight: 900; width: 26px; color: var(--soft); }
+.rank svg { width: 52px; height: 52px; flex: none; }
+.rank .s { margin-left: auto; font-size: 26px; font-weight: 900; }
+.banner { position: fixed; left: 50%; top: 10px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 15px; z-index: 50; max-width: 92vw; }
 .banner:empty { display: none; }
+
+/* ---------- game screen ---------- */
+.game { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; background: var(--stage-bg); transition: background-color 0.9s; overflow: hidden; }
+.game.shake { animation: shake 0.45s; }
+@keyframes shake { 15% { transform: translate(-8px, 3px) rotate(-1deg); } 30% { transform: translate(7px, -4px) rotate(1deg); } 45% { transform: translate(-6px, 2px); } 60% { transform: translate(5px, -2px); } 80% { transform: translate(-2px, 1px); } }
+.strip { display: flex; gap: 6px; align-items: center; padding: calc(8px + env(safe-area-inset-top)) 10px 8px; z-index: 4; }
+.pill { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 5px; background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 3px 8px; height: 40px; font-weight: 900; font-size: 17px; font-variant-numeric: tabular-nums; box-shadow: var(--sticker); white-space: nowrap; }
+.pill svg { width: 18px; height: 18px; flex: none; }
+.pill.m { color: var(--money); flex: 1.3; } .pill.h { color: var(--health); } .pill.p { color: var(--happy); }
+.pill.up { animation: flashUp 0.8s; } .pill.down { animation: flashDown 0.8s; }
+@keyframes flashUp { 0% { background: #b8f0cc; transform: scale(1.12); } 100% { background: var(--card); } }
+@keyframes flashDown { 0% { background: #ffc4c0; transform: scale(1.12); } 100% { background: var(--card); } }
+.mute { width: 34px; height: 34px; min-height: 34px; padding: 0; border-radius: 50%; border-width: 2px; box-shadow: none; font-size: 15px; flex: none; opacity: 0.7; }
+
+.stagearea { position: relative; overflow: hidden; min-height: 0; }
+.board { position: absolute; left: 0; right: 0; top: 0; bottom: 0; transition: bottom 0.45s cubic-bezier(.2, .8, .2, 1), right 0.45s cubic-bezier(.2, .8, .2, 1); }
+.game.sheet-open .board { bottom: calc(var(--sheet-h) - 22px); }
+.board svg { width: 100%; height: 100%; display: block; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 66%; overflow-y: auto; background: var(--bg); border-top: 3px solid var(--ink); border-radius: 24px 24px 0 0; padding: 0 14px 12px; display: flex; flex-direction: column; gap: 10px; transform: translateY(110%); transition: transform 0.45s cubic-bezier(.2, .8, .2, 1); z-index: 2; }
+.game.sheet-open .sheet { transform: none; }
+.timer { height: 12px; margin: 12px -2px 0; background: var(--line); border: 2.5px solid var(--ink); border-radius: 10px; overflow: hidden; flex: none; }
+.timer > i { display: block; height: 100%; background: var(--stage-accent); width: 100%; transition: width 0.1s linear; }
+.timer.warn > i { background: var(--bad); }
+.timer.warn { animation: pulse 0.5s infinite alternate; }
+@keyframes pulse { to { transform: scaleY(1.35); } }
+.sheet .card { padding: 14px 16px; }
+.sheet h2 { font-size: 22px; }
+.sheet .card p { font-size: 17px; margin-top: 4px; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { width: 100%; text-align: left; font-size: 18px; padding: 10px 16px; min-height: 58px; display: flex; flex-direction: column; justify-content: center; }
+.opt .def { display: block; font-size: 12px; font-weight: 700; color: var(--soft); }
+.opt.chosen { background: var(--stage-accent); color: #fff; transform: translate(2px, 3px); box-shadow: 1px 1px 0 rgba(42, 31, 23, 0.18); }
+.opt.chosen .def { color: #ffffffcc; }
+.opt:disabled:not(.chosen) { opacity: 0.5; }
+.hint { text-align: center; color: var(--soft); font-size: 15px; font-weight: 700; }
+
+.bb { position: absolute; top: 10px; left: 50%; max-width: calc(100% - 24px); transform: translate(-50%, -160%); transition: transform 0.4s cubic-bezier(.3, 1.4, .5, 1); background: var(--card); border: 3px solid var(--ink); border-radius: 14px; padding: 6px 14px; font-weight: 900; font-size: 17px; box-shadow: var(--sticker); z-index: 3; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bb.on { transform: translate(-50%, 0); }
+.stagecard { position: absolute; top: 50%; left: 50%; transform: translate(calc(50vw + 10%), -50%) rotate(6deg); transition: transform 0.6s cubic-bezier(.3, 1.3, .5, 1); background: var(--card); border: 3px solid var(--ink); border-radius: 22px; padding: 16px 26px; text-align: center; box-shadow: var(--sticker); z-index: 3; min-width: 240px; }
+.stagecard.on { transform: translate(-50%, -50%) rotate(-2deg); }
+.stagecard.off { transform: translate(calc(-50vw - 110%), -50%) rotate(-8deg); }
+.stagecard .emoji { font-size: 48px; }
+.stagecard small { display: block; color: var(--soft); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; }
+.stagecard b { font-size: 26px; font-weight: 900; color: var(--stage-accent); }
+
+.prow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 16px 6px calc(6px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 3px solid var(--ink); z-index: 4; }
+.pc { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 0 2px; }
+.pc.off { opacity: 0.45; }
+.av { width: 50px; height: 50px; position: relative; }
+.av svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.av.bounce svg { animation: bounce 0.6s; } .av.droop svg { animation: droop 0.8s; }
+.av.wobble svg { animation: shake 0.45s; }
+@keyframes bounce { 30% { transform: translateY(-12px) scale(1.08, 0.94); } 55% { transform: translateY(0) scale(1.1, 0.9); } 75% { transform: scale(0.96, 1.04); } }
+@keyframes droop { 40% { transform: translateY(4px) scale(1.08, 0.86); } }
+.pn { font-weight: 900; font-size: 14px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+.pm { font-weight: 800; font-size: 13px; color: var(--money); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.pm.neg { color: var(--bad); }
+.pc.me .pn { text-decoration: underline 3px var(--stage-accent); text-underline-offset: 3px; }
+.lock { position: absolute; top: -4px; right: calc(50% - 34px); width: 22px; height: 22px; border-radius: 50%; background: var(--good); color: #fff; border: 2.5px solid var(--ink); font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; transform: scale(0); transition: transform 0.35s cubic-bezier(.3, 1.8, .5, 1); }
+.pc.locked .lock { transform: scale(1); }
+.crown { position: absolute; top: -6px; left: 6px; width: calc((100% - 12px) / var(--n, 4)); text-align: center; font-size: 24px; line-height: 1; transition: transform 0.7s cubic-bezier(.3, 1.5, .5, 1), opacity 0.3s; pointer-events: none; z-index: 5; filter: drop-shadow(0 2px 0 rgba(42, 31, 23, 0.35)); }
+.crown.none { opacity: 0; }
+.flip { position: absolute; bottom: calc(100% + 18px); left: 50%; width: min(96%, 140px); height: 64px; margin-left: calc(min(96%, 140px) / -2); perspective: 500px; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.game.revealing .flip { opacity: 1; }
+.fi { position: relative; width: 100%; height: 100%; transition: transform 0.45s cubic-bezier(.3, 1.4, .5, 1); transform-style: preserve-3d; }
+.flip.shown .fi { transform: rotateY(180deg); }
+.fb, .ff { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 2.5px solid var(--ink); border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: var(--sticker); }
+.fb { background: var(--stage-accent); color: #fff; font-size: 26px; font-weight: 900; }
+.ff { background: var(--card); transform: rotateY(180deg); font-size: 12.5px; line-height: 1.2; font-weight: 800; padding: 4px; overflow: hidden; }
+.ff .auto { display: block; font-size: 10px; color: var(--soft); letter-spacing: 0.5px; }
+.floats { position: absolute; bottom: calc(100% + 86px); left: 0; right: 0; height: 0; pointer-events: none; }
+.fl { position: absolute; left: 50%; bottom: 0; white-space: nowrap; font-weight: 900; font-size: 15px; padding: 1px 8px; border: 2.5px solid var(--ink); border-radius: 999px; background: var(--card); animation: floatUp 2.4s cubic-bezier(.2, .8, .3, 1) forwards; }
+.fl.up { color: var(--good); } .fl.down { color: var(--bad); }
+@keyframes floatUp {
+  0% { transform: translate(-50%, 20px) scale(0.3); opacity: 0; }
+  12% { transform: translate(-50%, 0) scale(1.35); opacity: 1; }
+  22% { transform: translate(-50%, 0) scale(1); }
+  80% { opacity: 1; }
+  100% { transform: translate(-50%, -38px) scale(1); opacity: 0; }
+}
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+.cf { position: absolute; width: 9px; height: 13px; border-radius: 2px; animation: confetti 1.4s cubic-bezier(.2, .7, .4, 1) forwards; }
+@keyframes confetti { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+
+/* desktop: board left, card right, players along the bottom */
+@media (min-width: 900px) {
+  .game.sheet-open .board { bottom: 0; right: 40%; }
+  .sheet { left: auto; top: 0; width: 40%; max-height: none; border-top: 0; border-left: 3px solid var(--ink); border-radius: 0; padding: 0 28px 20px; justify-content: center; transform: translateX(105%); }
+  .sheet h2 { font-size: 30px; }
+  .sheet .card p { font-size: 19px; }
+  .opt { min-height: 64px; font-size: 19px; }
+  .av { width: 64px; height: 64px; }
+  .pn { font-size: 17px; } .pm { font-size: 15px; }
+  .lock { right: calc(50% - 42px); }
+  .flip { height: 72px; }
+  .ff { font-size: 14px; }
+  .floats { bottom: calc(100% + 96px); }
+  .fl { font-size: 18px; }
+  .pill { max-width: 220px; }
+  .strip { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game.shake, .av.wobble svg, .timer.warn { animation: none; }
+  .board, .sheet, .stagecard, .bb, .crown, .fi { transition-duration: 0.15s; }
+}
 </style>
 </head>
 <body>
@@ -97,7 +183,7 @@ input.code { text-transform: uppercase; letter-spacing: 6px; text-align: center;
 <script id="config">
 'use strict';
 const CONFIG = {
-  version: '0.2',                  // shown on the menu; bump on every release (GitHub Pages caches for 10 minutes)
+  version: '0.3',                  // shown on the menu; bump on every release (GitHub Pages caches for 10 minutes)
   minPlayers: 1,                   // 1 so you can poke at it alone; the game is built for 4
   maxPlayers: 4,
   roundsPerStage: 4,
@@ -120,6 +206,35 @@ const CONFIG = {
   moneyStep: 10,                   // rolled money is rounded to this
   score: { moneyPer: 500, moneyCap: 100, moneyFloor: -40, goalMultiplier: 1.5 },
   idleAfter: 6,                    // seconds without a heartbeat before a player counts as disconnected
+
+  // What other players can see. false: only their Money and mood face (exact Health and Happiness
+  // stay on the host until the final screen). The reveal still shows everyone's changes.
+  visibility: { othersHealthHappiness: false },
+  moodThresholds: [16, 33, 50, 67, 84],   // average of Health and Happiness; 6 faces: wrecked, rough, meh, fine, happy, ecstatic
+  colours: [                              // blob colours, first come first served
+    { id: 'tomato', hex: '#ff5a36' }, { id: 'sky', hex: '#2f8cff' }, { id: 'lime', hex: '#3cc46b' },
+    { id: 'grape', hex: '#9b5cff' }, { id: 'sun', hex: '#ffc21a' }, { id: 'bubblegum', hex: '#ff6fb5' },
+  ],
+
+  // Looks only: the client reads these, the rules never do.
+  look: {
+    stages: [   // bg = sky, ground, path, accent (buttons and highlights), scenery, dark (outlines on scenery)
+      { bg: '#d9f0d0', ground: '#a9dc95', path: '#3f8f45', accent: '#23a05a', scenery: '#7cc36d', dark: '#2f6b33' },
+      { bg: '#d6e4f5', ground: '#b4c6dc', path: '#35588a', accent: '#2f6fd6', scenery: '#93a9c6', dark: '#2c4266' },
+      { bg: '#fde3c8', ground: '#f4c08c', path: '#c0602a', accent: '#ef7d22', scenery: '#e79d5f', dark: '#86431a' },
+      { bg: '#ffe0f2', ground: '#ffd23f', path: '#c2187a', accent: '#e0218a', scenery: '#ff8fcf', dark: '#7a0f4d' },
+      { bg: '#ffe2d6', ground: '#f6cba0', path: '#c47848', accent: '#e39a1f', scenery: '#efa79c', dark: '#7d4a2a' },
+    ],
+    forks: {    // visual branches; everyone walks `def` until the real forks arrive in M6
+      2: { labels: ['Apprentice', 'Grad scheme', 'Business', 'Gap year'], def: 1 },
+      3: { labels: ['Settle', 'Stay free', 'Chaos'], def: 1 },
+    },
+    reveal: { flipStart: 500, flipGap: 400, floatAt: 2300, hopAt: 3200, hopGap: 150 },   // ms into the reveal
+    hopMs: 460, hopHeight: 34, panMs: 900,
+    bigLoss: { money: -400, stat: -12 },   // shake + double buzz (a loss of more than £400 or 12+ points)
+    bigWin: { money: 400, stat: 12 },      // confetti
+    confettiMax: 60, shakeMs: 450, timerWarn: 5,
+  },
 };
 </script>
 
@@ -269,6 +384,7 @@ const Sim = (() => {
   const T = CONFIG.timings;
   const ROUNDS = CONFIG.stages.length * CONFIG.roundsPerStage;
   const SHOWS_CARD = ['card', 'pick', 'reveal', 'spin'];
+  const COLOURS = CONFIG.colours.map(c => c.id);
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
   function createGame() {
@@ -283,7 +399,8 @@ const Sim = (() => {
     if (p) { p.name = name; p.connected = true; p.seen = now; return { ok: true }; }
     if (g.phase !== 'lobby') return { err: 'started' };
     if (list(g).length >= CONFIG.maxPlayers) return { err: 'full' };
-    g.players[id] = { id, name, connected: true, seen: now, ready: false, ...CONFIG.start };
+    const colour = COLOURS.find(c => !list(g).some(p => p.colour === c));
+    g.players[id] = { id, name, colour, connected: true, seen: now, ready: false, ...CONFIG.start };
     return { ok: true };
   }
   function setConnected(g, id, on, now = 0) {
@@ -300,6 +417,19 @@ const Sim = (() => {
     if (!p || g.phase !== 'lobby') return false;
     p.ready = !!on;
     return true;
+  }
+  function setColour(g, id, colour) {
+    const p = g.players[id];
+    if (!p || g.phase !== 'lobby' || !COLOURS.includes(colour) || list(g).some(q => q !== p && q.colour === colour)) return false;
+    p.colour = colour;
+    return true;
+  }
+  // 0 wrecked .. 5 ecstatic. Only this index leaves the host, never the stats behind it.
+  function moodOf(p) {
+    const avg = (p.health + p.happiness) / 2, t = CONFIG.moodThresholds;
+    let i = 0;
+    while (i < t.length && avg > t[i]) i++;
+    return i;
   }
   const canStart = g => g.phase === 'lobby' && list(g).length >= CONFIG.minPlayers && list(g).every(p => p.ready && p.connected);
 
@@ -395,6 +525,14 @@ const Sim = (() => {
       .sort((a, b) => b.total - a.total || b.happiness - a.happiness || b.health - a.health);
   }
 
+  // Who wears the crown: the provisional Life Score leader, or nobody on a dead heat.
+  function leader(g) {
+    const s = standings(g);
+    if (!s.length) return null;
+    if (s.length > 1 && s[0].total === s[1].total && s[0].happiness === s[1].happiness && s[0].health === s[1].health) return null;
+    return s[0].id;
+  }
+
   function resetToLobby(g) {
     for (const p of list(g)) {
       if (!p.connected) { delete g.players[p.id]; continue; }
@@ -423,10 +561,13 @@ const Sim = (() => {
       canStart: canStart(g),
       players: ids.map(pid => {
         const p = g.players[pid];
-        return { id: pid, name: p.name, connected: p.connected, ready: p.ready, locked: g.picks[pid] != null,
-          money: p.money, health: p.health, happiness: p.happiness };
+        const row = { id: pid, name: p.name, colour: p.colour, connected: p.connected, ready: p.ready, locked: g.picks[pid] != null,
+          money: p.money, mood: moodOf(p) };
+        if (pid === id || CONFIG.visibility.othersHealthHappiness || g.phase === 'final') Object.assign(row, { health: p.health, happiness: p.happiness });
+        return row;
       }),
       spotlight: g.spotlight,
+      leader: g.order.length ? leader(g) : null,
     };
     if (SHOWS_CARD.includes(g.phase) && g.card) {
       v.card = { title: fill(g, g.card.title, id), text: fill(g, g.card.text, id),
@@ -439,7 +580,7 @@ const Sim = (() => {
   }
 
   return {
-    createGame, addPlayer, setConnected, setReady, canStart, start, pick, tick, viewFor, resetToLobby, lifeScore, standings,
+    createGame, addPlayer, setConnected, setReady, setColour, moodOf, leader, canStart, start, pick, tick, viewFor, resetToLobby, lifeScore, standings,
     setEvents(e) { EVENTS = e; }, setRandom(fn) { rand = fn; }, ROUNDS,
   };
 })();
@@ -531,11 +672,12 @@ const Net = (() => {
 <!-- ======================================================================
      APP: menu, host and client sessions, screens.
      ====================================================================== -->
-<script>
+<script id="app-js">
 'use strict';
 (() => {
   const $app = document.getElementById('app');
   const $banner = document.getElementById('banner');
+  const L = CONFIG.look;
   Sim.setEvents(JSON.parse(document.getElementById('events').textContent));
 
   const area = n => { try { return window[n]; } catch (e) { return null; } };
@@ -551,7 +693,9 @@ const Net = (() => {
   const cleanName = n => String(n || '').replace(/[^\p{L}\p{N} _'.-]/gu, '').trim().slice(0, 12);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const money = n => (n < 0 ? '-£' : '£') + Math.abs(n).toLocaleString('en-GB');
-  const signed = (n, f = String) => (n > 0 ? '+' : n < 0 ? '-' : '±') + f(Math.abs(n));
+  const signed = (n, f = String) => (n > 0 ? '+' : '-') + f(Math.abs(n));
+  const hexOf = c => (CONFIG.colours.find(x => x.id === c) || CONFIG.colours[0]).hex;
+  const reduced = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   let session = null;      // { act(type, data), destroy(), code, isHost }
   let view = null;         // latest view from the host
@@ -560,7 +704,566 @@ const Net = (() => {
 
   const banner = t => { $banner.textContent = t || ''; };
 
-  // --- host -------------------------------------------------------------------
+  // =========================================================================
+  // SOUND (Web Audio, synthesised; starts after the first tap) and HAPTICS
+  // =========================================================================
+  const Sound = (() => {
+    let ctx = null, muted = store.get('log.muted') === '1';
+    function unlock() {
+      if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; }
+    }
+    function tone(f, d, o = {}) {
+      if (!ctx || muted) return;
+      const t = ctx.currentTime + (o.delay || 0);
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = o.type || 'sine';
+      osc.frequency.setValueAtTime(f, t);
+      if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + d);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(o.g || 0.12, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(t); osc.stop(t + d + 0.03);
+    }
+    const SFX = {
+      tap: () => tone(520, 0.05, { type: 'square', g: 0.035 }),
+      lock: () => { tone(660, 0.08, { type: 'triangle' }); tone(990, 0.13, { type: 'triangle', delay: 0.07 }); },
+      tick: () => tone(1250, 0.035, { type: 'square', g: 0.03 }),
+      flip: () => tone(300, 0.07, { type: 'triangle', to: 680, g: 0.09 }),
+      gain: () => [523, 659, 784].forEach((f, i) => tone(f, 0.13, { type: 'triangle', delay: i * 0.07 })),
+      loss: () => tone(330, 0.32, { type: 'sawtooth', to: 110, g: 0.06 }),
+      hop: () => tone(380, 0.09, { to: 760, g: 0.04 }),
+      stage: () => [392, 523, 659, 784].forEach((f, i) => tone(f, 0.12, { type: 'square', g: 0.04, delay: i * 0.09 })),
+      jackpot: () => [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, 0.15, { type: 'square', g: 0.05, delay: i * 0.08 })),
+    };
+    return {
+      unlock, play(n) { try { SFX[n](); } catch (e) { /* no audio */ } },
+      get muted() { return muted; },
+      toggle() { muted = !muted; store.set('log.muted', muted ? '1' : '0'); return muted; },
+    };
+  })();
+  addEventListener('pointerdown', () => Sound.unlock(), { capture: true });
+  const buzz = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* no haptics */ } };
+  const HAPTIC = { lock: 18, bigLoss: [70, 60, 70], jackpot: [120, 60, 120, 60, 400] };
+
+  // =========================================================================
+  // AVATARS: one blob body, coloured per player, six mood faces
+  // =========================================================================
+  const INK = '#2a1f17';
+  const BODY = 'M50 10C77 10 91 32 91 60C91 85 74 96 50 96C26 96 9 85 9 60C9 32 23 10 50 10Z';
+  const EYES = '<circle cx="38" cy="52" r="5"/><circle cx="62" cy="52" r="5"/>';
+  const FACES = [   // 0 wrecked, 1 rough, 2 meh, 3 fine, 4 happy, 5 ecstatic
+    '<path d="M32 46l11 11M43 46l-11 11M57 46l11 11M68 46l-11 11" fill="none" stroke-width="5"/><path d="M36 79q7-7 14 0t14 0" fill="none" stroke-width="5"/>',
+    '<path d="M31 49h14M55 49h14" fill="none" stroke-width="5"/><circle cx="38" cy="55" r="3.5"/><circle cx="62" cy="55" r="3.5"/><path d="M38 80q12-10 24 0" fill="none" stroke-width="5"/>',
+    EYES + '<path d="M40 75h20" fill="none" stroke-width="5"/>',
+    EYES + '<path d="M39 71q11 7 22 0" fill="none" stroke-width="5"/>',
+    EYES + '<path d="M35 67q15 16 30 0" fill="none" stroke-width="5"/><circle cx="27" cy="64" r="5" fill="#ff8a8a" stroke="none" opacity=".6"/><circle cx="73" cy="64" r="5" fill="#ff8a8a" stroke="none" opacity=".6"/>',
+    '<path d="M31 55q7-10 14 0M55 55q7-10 14 0" fill="none" stroke-width="5"/><path d="M33 65h34q-2 20-17 20t-17-20z" stroke-width="3"/><circle cx="25" cy="66" r="6" fill="#ff8a8a" stroke="none" opacity=".7"/><circle cx="75" cy="66" r="6" fill="#ff8a8a" stroke="none" opacity=".7"/>',
+  ];
+  const avatarInner = (hex, mood) => `<path d="${BODY}" fill="${hex}" stroke="${INK}" stroke-width="4.5"/>
+    <ellipse cx="34" cy="30" rx="10" ry="6" fill="#fff" opacity=".4"/>
+    <g stroke="${INK}" fill="${INK}" stroke-linecap="round" stroke-linejoin="round">${FACES[mood] || FACES[3]}</g>`;
+  const avatarSVG = (hex, mood) => `<svg viewBox="0 0 100 100" aria-hidden="true">${avatarInner(hex, mood)}</svg>`;
+
+  // =========================================================================
+  // BOARD: one SVG world, 5 stages side by side; the camera pans per stage
+  // =========================================================================
+  const Board = (() => {
+    const W = 460, VW = 500, VH = 300, BASE = 172, HORIZON = 96;
+    const STOP_X = [80, 180, 280, 380];
+    const AMP = 40, FORK_AMP = 10, SPREAD = 32;
+    let el = null, svg = null, tokens = {}, ids = [], camX = 0, camAnim = null, raf = 0;
+
+    const forkOf = s => L.forks[s];
+    const branchY = (s, b) => { const f = forkOf(s); return f ? (b - (f.labels.length - 1) / 2) * SPREAD : 0; };
+    const junction = s => ({ x: s * W, y: BASE });
+    function stopPos(r, branch) {
+      const s = Math.ceil(r / 4), i = (r - 1) % 4, f = forkOf(s);
+      const b = branch == null ? (f ? f.def : 0) : branch;
+      return { x: (s - 1) * W + STOP_X[i], y: BASE + (i % 2 ? -1 : 1) * (f ? FORK_AMP : AMP) + branchY(s, b) };
+    }
+    function curve(pts) {   // Catmull-Rom through every point
+      let d = `M${pts[0].x},${pts[0].y}`;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+        d += `C${(p1.x + (p2.x - p0.x) / 6).toFixed(1)},${(p1.y + (p2.y - p0.y) / 6).toFixed(1)} ${(p2.x - (p3.x - p1.x) / 6).toFixed(1)},${(p2.y - (p3.y - p1.y) / 6).toFixed(1)} ${p2.x},${p2.y}`;
+      }
+      return d;
+    }
+
+    const ICONS = [   // drawn around 0,0 in about a 16x16 box
+      '<path d="M-7-5h6q1 0 1 1v10q0-1-1-1h-6zM7-5h-6q-1 0-1 1v10q0-1 1-1h6z"/>',
+      '<rect x="-7" y="-3" width="14" height="10" rx="2"/><path d="M-3-3v-3h6v3" fill="none" stroke-width="2"/>',
+      '<path d="M-7 0L0-7L7 0V7H-7Z"/>',
+      '<path d="M-8 3v-3l3-1 3-4h5l3 4 2 1v3z"/><circle cx="-4" cy="4" r="2.4"/><circle cx="5" cy="4" r="2.4"/>',
+      '<path d="M-6 7L2-6M-1 7L6-3M-6 1h11" fill="none" stroke-width="2.2"/>',
+    ];
+    const star = (cx, cy, r1, r2, n) => Array.from({ length: n * 2 }, (_, i) => {
+      const a = Math.PI * i / n, r = i % 2 ? r2 : r1;
+      return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`;
+    }).join(' ');
+
+    // Flat scenery per stage, in stage-local coordinates (0..460). Sky above HORIZON, ground below.
+    function scenery(s, c) {
+      const sc = c.scenery, dk = c.dark;
+      let o = '';
+      if (s === 1) {
+        o += `<g fill="${sc}" stroke="${dk}" stroke-width="2.5"><path d="M30 96V56h100v40Z"/><path d="M24 56L80 30l56 26Z"/>
+          <path d="M300 96V62h80v34Z"/><path d="M294 62l46-20 46 20Z"/></g>
+          <g fill="${dk}"><rect x="44" y="62" width="8" height="34"/><rect x="66" y="62" width="8" height="34"/><rect x="88" y="62" width="8" height="34"/><rect x="110" y="62" width="8" height="34"/>
+          <rect x="312" y="70" width="34" height="12" rx="2"/><rect x="356" y="74" width="14" height="22"/></g>
+          <text x="329" y="80" font-size="9" font-weight="900" fill="#fff" text-anchor="middle">PUB</text>
+          <g fill="${sc}" stroke="${dk}" stroke-width="2.5"><circle cx="200" cy="70" r="18"/><circle cx="235" cy="76" r="13"/><circle cx="430" cy="74" r="15"/></g>
+          <path d="M10 246Q120 272 230 246T450 246" fill="none" stroke="${dk}" stroke-width="2"/>`;
+        ['#ffd54a', '#ff6f61', '#6fd3ff'].forEach((col, k) => {
+          for (let x = 30 + k * 36; x < 440; x += 108) o += `<circle cx="${x}" cy="${(254 + 6 * Math.sin(x / 35)).toFixed(1)}" r="5" fill="${col}" stroke="${dk}" stroke-width="1.5"/>`;
+        });
+      } else if (s === 2) {
+        const hs = [52, 76, 40, 64, 84, 46, 70, 58, 80, 44];
+        hs.forEach((h, k) => {
+          const x = 6 + k * 45, y = HORIZON - h;
+          o += `<rect x="${x}" y="${y}" width="38" height="${h}" fill="${k % 2 ? sc : dk}" opacity="${k % 2 ? 1 : 0.55}"/>`;
+          for (let r = 0; r < Math.floor((h - 10) / 14); r++) for (let q = 0; q < 3; q++) {
+            if ((k + r + q) % 3 === 0) o += `<rect x="${x + 6 + q * 10}" y="${y + 8 + r * 14}" width="6" height="7" fill="#fff6c8" opacity=".85"/>`;
+          }
+        });
+        for (let x = 40; x < 460; x += 120) o += `<path d="M${x} 280v-34m-8 0h16" stroke="${dk}" stroke-width="3" fill="none"/><circle cx="${x}" cy="244" r="5" fill="#fff6c8" stroke="${dk}" stroke-width="2"/>`;
+      } else if (s === 3) {
+        for (let k = 0; k < 5; k++) {
+          const x = 14 + k * 92, roof = ['#b3472b', dk, '#a35a3b'][k % 3];
+          o += `<rect x="${x}" y="58" width="60" height="38" fill="${sc}" stroke="${dk}" stroke-width="2.5"/>
+            <path d="M${x - 6} 58l36-24 36 24z" fill="${roof}" stroke="${dk}" stroke-width="2.5"/>
+            <rect x="${x + 24}" y="74" width="12" height="22" fill="${dk}"/><rect x="${x + 6}" y="66" width="12" height="10" fill="#fff6c8" stroke="${dk}" stroke-width="2"/><rect x="${x + 42}" y="66" width="12" height="10" fill="#fff6c8" stroke="${dk}" stroke-width="2"/>`;
+        }
+        o += `<path d="M0 262H460" stroke="${dk}" stroke-width="2.5"/>`;
+        for (let x = 4; x < 460; x += 16) o += `<path d="M${x} 280v-30l4-5 4 5v30z" fill="#fffaf2" stroke="${dk}" stroke-width="2"/>`;
+      } else if (s === 4) {
+        o += `<g transform="rotate(-4 230 60)">
+          <polygon points="${star(70, 40, 22, 11, 8)}" fill="#ffd23f" stroke="${dk}" stroke-width="2.5"/>
+          <polygon points="${star(250, 30, 16, 8, 7)}" fill="${sc}" stroke="${dk}" stroke-width="2.5"/>
+          <polygon points="${star(420, 46, 20, 10, 9)}" fill="#ffd23f" stroke="${dk}" stroke-width="2.5"/>
+          <path d="M120 92l18-14 50-4 20 12 22 2v10H120z" fill="${c.accent}" stroke="${dk}" stroke-width="3"/>
+          <path d="M146 78l10-1 2 8h-14z" fill="#bfe9ff" stroke="${dk}" stroke-width="2"/>
+          <circle cx="146" cy="98" r="9" fill="${INK}"/><circle cx="208" cy="98" r="9" fill="${INK}"/>
+          <circle cx="146" cy="98" r="3.5" fill="#ddd"/><circle cx="208" cy="98" r="3.5" fill="#ddd"/>
+          <circle cx="312" cy="94" r="10" fill="none" stroke="${INK}" stroke-width="4"/><circle cx="356" cy="94" r="10" fill="none" stroke="${INK}" stroke-width="4"/>
+          <path d="M312 94l14-16h18l12 16M326 78l-4-8h-8M344 78l6-10" fill="none" stroke="${dk}" stroke-width="4" stroke-linejoin="round"/></g>
+          <path d="M0 262l20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10 20 10 20-10" fill="none" stroke="${dk}" stroke-width="3" opacity=".5"/>`;
+      } else {
+        o += `<path d="M306 96a54 54 0 0 1 108 0z" fill="#ffb36b" opacity=".9"/>
+          <rect x="40" y="66" width="120" height="30" fill="${sc}" stroke="${dk}" stroke-width="2.5"/>
+          <path d="M32 66l14-14h108l14 14z" fill="${dk}"/>
+          <rect x="90" y="76" width="14" height="20" fill="${dk}"/><rect x="54" y="74" width="20" height="12" fill="#fff6c8" stroke="${dk}" stroke-width="2"/><rect x="124" y="74" width="20" height="12" fill="#fff6c8" stroke="${dk}" stroke-width="2"/>
+          <g transform="translate(230 270)"><path d="M-14 12L6-14M0 12L14-6M-16 0h26" fill="none" stroke="${dk}" stroke-width="3.5"/><path d="M6-14L14-6L-4 2L-12-6z" fill="#ff8f6b" stroke="${dk}" stroke-width="2"/></g>`;
+        for (let k = 0; k < 3; k++) for (let x = 300; x < 450; x += 22) o += `<ellipse cx="${x + (k % 2) * 11}" cy="${252 + k * 14}" rx="8" ry="5" fill="#5fae4f" stroke="${dk}" stroke-width="1.5"/>`;
+      }
+      return o;
+    }
+
+    function build(container, players) {
+      el = container;
+      ids = players.map(p => p.id);
+      let world = '';
+      for (let s = 1; s <= 5; s++) {
+        const c = L.stages[s - 1], x0 = (s - 1) * W;
+        world += `<rect x="${x0 - 1}" y="-400" width="${W + 2}" height="${400 + HORIZON}" fill="${c.bg}"/>
+          <rect x="${x0 - 1}" y="${HORIZON}" width="${W + 2}" height="600" fill="${c.ground}"/>
+          <g transform="translate(${x0} 0)">${scenery(s, c)}</g>`;
+      }
+      // the far left and right of the world, in case the camera shows past the ends
+      world = `<rect x="-600" y="-400" width="601" height="${400 + HORIZON}" fill="${L.stages[0].bg}"/><rect x="-600" y="${HORIZON}" width="601" height="600" fill="${L.stages[0].ground}"/>
+        <rect x="${5 * W - 1}" y="-400" width="600" height="${400 + HORIZON}" fill="${L.stages[4].bg}"/><rect x="${5 * W - 1}" y="${HORIZON}" width="600" height="600" fill="${L.stages[4].ground}"/>` + world;
+      let paths = '', stops = '', labels = '';
+      for (let s = 1; s <= 5; s++) {
+        const c = L.stages[s - 1], f = forkOf(s), n = f ? f.labels.length : 1;
+        for (let b = 0; b < n; b++) {
+          const pts = [junction(s - 1)];
+          for (let i = 1; i <= 4; i++) pts.push(stopPos((s - 1) * 4 + i, b));
+          pts.push(junction(s));
+          const d = curve(pts);
+          paths += `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${f ? 17 : 23}" stroke-linecap="round"/>
+            <path d="${d}" fill="none" stroke="${c.path}" stroke-width="${f ? 11 : 16}" stroke-linecap="round"/>
+            <path d="${d}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>`;
+          for (let i = 1; i <= 4; i++) {
+            const p = stopPos((s - 1) * 4 + i, b);
+            const def = !f || b === f.def;
+            stops += `<g transform="translate(${p.x} ${p.y})"><circle r="${f ? 11 : 14}" fill="${c.path}" stroke="${INK}" stroke-width="3"/>
+              <g fill="#fff8ef" stroke="#fff8ef" transform="scale(${f ? 0.7 : 0.9})" opacity="${def ? 1 : 0.75}">${ICONS[s - 1]}</g></g>`;
+          }
+          if (f) {
+            const p = stopPos((s - 1) * 4 + 1, b);
+            labels += `<text x="${p.x - 30}" y="${p.y + 4}" text-anchor="end" font-size="10.5" font-weight="900" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="3">${esc(f.labels[b])}</text>`;
+          }
+        }
+        // junction gate
+        const j = junction(s);
+        if (s < 5) stops += `<circle cx="${j.x}" cy="${j.y}" r="9" fill="#fff8ef" stroke="${INK}" stroke-width="3"/>`;
+      }
+      const start = junction(0), fin = junction(5);
+      stops += `<g transform="translate(${start.x} ${start.y})"><circle r="15" fill="#fff8ef" stroke="${INK}" stroke-width="3"/><text y="4" text-anchor="middle" font-size="11" font-weight="900" fill="${INK}">BORN</text></g>
+        <g transform="translate(${fin.x} ${fin.y})"><path d="M0 0V-46" stroke="${INK}" stroke-width="4"/><path d="M0-46h26l-6 9 6 9H0z" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M6-46h6v6H6zM18-46h6v6h-6zM12-40h6v6h-6zM0-40h6v6H0zM6-34h6v6H6zM18-34h6v6h-6z" fill="${INK}"/><circle r="12" fill="#fff8ef" stroke="${INK}" stroke-width="3"/></g>`;
+      let toks = '';
+      for (const p of players) {
+        toks += `<g class="tok" data-id="${esc(p.id)}"><ellipse rx="13" ry="4" fill="${INK}" opacity=".25"/><g class="sq"><g transform="translate(-19 -37) scale(.38)" class="tav">${avatarInner(hexOf(p.colour), p.mood)}</g></g></g>`;
+      }
+      el.innerHTML = `<svg viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet" aria-label="Game board"><g>${world}</g><g>${paths}</g><g>${stops}${labels}</g><g class="toks">${toks}</g></svg>`;
+      svg = el.firstChild;
+      tokens = {};
+      el.querySelectorAll('.tok').forEach(g => { tokens[g.dataset.id] = { g, sq: g.querySelector('.sq'), av: g.querySelector('.tav'), x: 0, y: 0, mood: -1, anim: null }; });
+    }
+
+    // Where tokens stand: 'start', a junction between stages, or a stop (1..20).
+    function spotXY(spot, k) {
+      let p;
+      if (spot.type === 'stop') p = stopPos(spot.r, null);
+      else p = junction(spot.s);
+      const n = ids.length;
+      return { x: p.x + (k - (n - 1) / 2) * 15, y: p.y + (k % 2 ? 5 : -3) };
+    }
+    function place(id, xy) {
+      const t = tokens[id];
+      if (!t) return;
+      t.x = xy.x; t.y = xy.y; t.anim = null;
+      t.g.setAttribute('transform', `translate(${xy.x} ${xy.y})`);
+      t.sq.setAttribute('transform', '');
+    }
+    function hop(id, xy, delay) {
+      const t = tokens[id];
+      if (!t || (t.x === xy.x && t.y === xy.y)) return;
+      const far = Math.hypot(xy.x - t.x, xy.y - t.y) > 260;
+      if (far) { place(id, xy); return; }
+      const dur = reduced() ? 160 : L.hopMs;
+      t.anim = { fx: t.x, fy: t.y, tx: xy.x, ty: xy.y, start: performance.now() + delay, dur, sounded: false };
+      kick();
+    }
+    function moveAll(spot, animate, gap = 0) {
+      ids.forEach((id, k) => { const xy = spotXY(spot, k); if (animate) hop(id, xy, k * gap); else place(id, xy); });
+    }
+    function setCamera(stage, animate) {
+      const target = (stage - 1) * W - 36;
+      if (!animate || reduced()) { camX = target; camAnim = null; apply(); return; }
+      if (target === camX) return;
+      camAnim = { from: camX, to: target, start: performance.now(), dur: L.panMs };
+      kick();
+    }
+    function apply() { if (svg) svg.setAttribute('viewBox', `${camX.toFixed(1)} 0 ${VW} ${VH}`); }
+    function setMood(id, colour, mood) {
+      const t = tokens[id];
+      if (t && t.mood !== mood) { t.mood = mood; t.av.innerHTML = avatarInner(hexOf(colour), mood); }
+    }
+    const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+    function frame(now) {
+      raf = 0;
+      let busy = false;
+      if (camAnim) {
+        const k = Math.min(1, (now - camAnim.start) / camAnim.dur);
+        camX = camAnim.from + (camAnim.to - camAnim.from) * ease(k);
+        apply();
+        if (k >= 1) camAnim = null; else busy = true;
+      }
+      for (const id in tokens) {
+        const t = tokens[id], a = t.anim;
+        if (!a) continue;
+        busy = true;
+        const k = (now - a.start) / a.dur;
+        if (k < 0) continue;
+        if (!a.sounded) { a.sounded = true; Sound.play('hop'); }
+        const e = Math.min(1, k);
+        t.x = a.fx + (a.tx - a.fx) * e;
+        t.y = a.fy + (a.ty - a.fy) * e - 4 * L.hopHeight * e * (1 - e);
+        // squash on take-off and landing, stretch in the air
+        let sx = 1, sy = 1;
+        if (e < 0.15) { sx = 1 + (0.15 - e) * 1.4; sy = 2 - sx; }
+        else if (e < 0.85) { sx = 0.9; sy = 1.12; }
+        else if (k < 1.25) { const q = Math.sin((k - 0.85) / 0.4 * Math.PI); sx = 1 + 0.22 * q; sy = 1 - 0.22 * q; }
+        t.g.setAttribute('transform', `translate(${t.x.toFixed(1)} ${t.y.toFixed(1)})`);
+        t.sq.setAttribute('transform', `scale(${sx.toFixed(3)} ${sy.toFixed(3)})`);
+        if (k >= 1.25) { t.anim = null; t.sq.setAttribute('transform', ''); }
+      }
+      if (busy) kick();
+    }
+    return { build, moveAll, setCamera, setMood, get ids() { return ids; } };
+  })();
+
+  // =========================================================================
+  // FX: floating numbers, confetti, shake
+  // =========================================================================
+  let confettiLive = 0;
+  function confetti(x, y, n) {
+    if (reduced()) return;
+    n = Math.min(n, L.confettiMax - confettiLive);
+    if (n <= 0) return;
+    let layer = document.querySelector('.confetti');
+    if (!layer) { layer = document.createElement('div'); layer.className = 'confetti'; document.body.appendChild(layer); }
+    const cols = ['#ff5a36', '#2f8cff', '#3cc46b', '#ffc21a', '#ff6fb5', '#9b5cff'];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('i');
+      c.className = 'cf';
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2, v = 120 + Math.random() * 200;
+      c.style.cssText = `left:${x}px;top:${y}px;background:${cols[i % cols.length]};--dx:${(Math.cos(a) * v).toFixed(0)}px;--dy:${(Math.sin(a) * v + 260).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg;animation-delay:${(Math.random() * 0.12).toFixed(2)}s`;
+      layer.appendChild(c);
+      confettiLive++;
+      c.addEventListener('animationend', () => { c.remove(); confettiLive--; });
+    }
+  }
+  function shake(el) {
+    if (reduced() || !el) return;
+    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+    setTimeout(() => el.classList.remove('shake'), L.shakeMs);
+  }
+  const isBigLoss = d => d.money <= L.bigLoss.money || d.health <= L.bigLoss.stat || d.happiness <= L.bigLoss.stat;
+  const isBigWin = d => d.money >= L.bigWin.money || d.health >= L.bigWin.stat || d.happiness >= L.bigWin.stat;
+
+  // =========================================================================
+  // GAME SCREEN: built once per game, then updated piece by piece
+  // =========================================================================
+  const PHASES = ['stage', 'card', 'pick', 'reveal', 'spin'];
+  const inGame = v => v && PHASES.includes(v.phase);
+  const G = { el: null, timers: [], holdStats: 0, holdTokens: 0, shown: {}, mine: null, cardKey: '', revealed: 0, crown: undefined, stage: 0, stageCard: 0 };
+  const later = (ms, fn) => G.timers.push(setTimeout(fn, ms));
+  const $ = sel => G.el.querySelector(sel);
+  const ICON = {
+    money: '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="#ffd23f" stroke="#2a1f17" stroke-width="2"/><text x="10" y="14.5" font-size="12" font-weight="900" text-anchor="middle" fill="#2a1f17">£</text></svg>',
+    health: '<svg viewBox="0 0 20 20"><path d="M10 17S2 12 2 6.5A4 4 0 0 1 10 5a4 4 0 0 1 8 1.5C18 12 10 17 10 17z" fill="#e0475b" stroke="#2a1f17" stroke-width="2"/></svg>',
+    happy: '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="#ffc21a" stroke="#2a1f17" stroke-width="2"/><circle cx="7" cy="8" r="1.3" fill="#2a1f17"/><circle cx="13" cy="8" r="1.3" fill="#2a1f17"/><path d="M6.5 11.5q3.5 3.5 7 0" fill="none" stroke="#2a1f17" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  };
+
+  function buildGame(v) {
+    G.timers.forEach(clearTimeout);
+    Object.assign(G, { timers: [], holdStats: 0, holdTokens: 0, shown: {}, mine: null, cardKey: '', revealed: 0, crown: undefined, stage: 0, stageCard: 0 });
+    const cols = v.players.map(p => `<div class="pc ${p.id === v.me ? 'me' : ''}" data-id="${esc(p.id)}">
+        <div class="flip"><div class="fi"><div class="fb">?</div><div class="ff"></div></div></div>
+        <div class="floats"></div>
+        <div class="av"></div><span class="lock">✓</span>
+        <div class="pn">${esc(p.name)}</div><div class="pm"></div></div>`).join('');
+    $app.innerHTML = `<div class="game">
+      <div class="strip">
+        <div class="pill m">${ICON.money}<span data-s="money"></span></div>
+        <div class="pill h">${ICON.health}<span data-s="health"></span></div>
+        <div class="pill p">${ICON.happy}<span data-s="happiness"></span></div>
+        <button class="mute" data-act="mute" aria-label="Sound on or off">${Sound.muted ? '🔇' : '🔊'}</button>
+      </div>
+      <div class="stagearea">
+        <div class="board"></div>
+        <div class="bb"></div>
+        <div class="stagecard"></div>
+        <div class="sheet"><div class="timer"><i></i></div><div class="card"><h2></h2><p></p></div><div class="opts"></div><p class="hint"></p></div>
+      </div>
+      <div class="prow" style="--n:${v.players.length}">${cols}<div class="crown none">👑</div></div>
+    </div>`;
+    G.el = $app.firstElementChild;
+    Board.build($('.board'), v.players);
+    Board.setCamera(Math.max(1, v.stage), false);
+  }
+
+  function setTheme(stage) {
+    const c = L.stages[stage - 1];
+    G.el.style.setProperty('--stage-bg', c.bg);
+    G.el.style.setProperty('--stage-accent', c.accent);
+    document.documentElement.style.setProperty('--accent', c.accent);
+  }
+
+  // Where the tokens should stand for this view.
+  function spotFor(v) {
+    if (v.phase === 'reveal' || v.phase === 'spin') return { type: 'stop', r: v.round };
+    if (v.phase === 'stage') return { type: 'junction', s: v.stage - 1 };
+    if ((v.round - 1) % v.perStage === 0) return { type: 'junction', s: v.stage - 1 };
+    return { type: 'stop', r: v.round - 1 };
+  }
+
+  function countTo(span, from, to, fmt) {
+    if (from === to || reduced()) { span.textContent = fmt(to); return; }
+    const t0 = performance.now(), dur = 700;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur);
+      span.textContent = fmt(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // Stats, money, faces and the crown. Held back during a reveal until the numbers land.
+  function applyStats(v, animate) {
+    const me = v.players.find(p => p.id === v.me);
+    if (me) {
+      const fmt = { money, health: String, happiness: String };
+      for (const k of ['money', 'health', 'happiness']) {
+        const span = $(`[data-s="${k}"]`), old = G.mine ? G.mine[k] : me[k];
+        if (animate && old !== me[k]) {
+          countTo(span, old, me[k], fmt[k]);
+          const pill = span.parentNode;
+          pill.classList.remove('up', 'down'); void pill.offsetWidth; pill.classList.add(me[k] > old ? 'up' : 'down');
+        } else span.textContent = fmt[k](me[k]);
+      }
+      G.mine = { money: me.money, health: me.health, happiness: me.happiness };
+    }
+    v.players.forEach((p, k) => {
+      const col = G.el.querySelector(`.pc[data-id="${CSS.escape(p.id)}"]`);
+      if (!col) return;
+      const was = G.shown[p.id];
+      const pm = col.querySelector('.pm');
+      if (animate && was && was.money !== p.money) countTo(pm, was.money, p.money, money); else pm.textContent = money(p.money);
+      pm.classList.toggle('neg', p.money < 0);
+      if (!was || was.mood !== p.mood || was.colour !== p.colour) {
+        const av = col.querySelector('.av');
+        av.innerHTML = avatarSVG(hexOf(p.colour), p.mood);
+        if (animate && was && was.mood !== p.mood) { av.classList.remove('bounce', 'droop'); void av.offsetWidth; av.classList.add(p.mood > was.mood ? 'bounce' : 'droop'); }
+        Board.setMood(p.id, p.colour, p.mood);
+      }
+      G.shown[p.id] = { money: p.money, mood: p.mood, colour: p.colour };
+    });
+    if (G.crown !== v.leader) {
+      G.crown = v.leader;
+      const crown = $('.crown'), idx = v.players.findIndex(p => p.id === v.leader);
+      crown.classList.toggle('none', idx < 0);
+      if (idx >= 0) crown.style.transform = `translateX(${idx * 100}%)`;
+    }
+  }
+
+  function renderSheet(v) {
+    const key = v.round + ':' + v.card.title;
+    if (G.cardKey !== key) {
+      G.cardKey = key;
+      $('.sheet h2').textContent = v.card.title;
+      $('.sheet .card p').textContent = v.card.text;
+      $('.opts').innerHTML = v.card.options.map((o, i) => `<button class="opt" data-act="pick" data-i="${i}"><span class="lbl">${esc(o.label)}</span>${o.default ? '<span class="def">Default if the timer runs out</span>' : ''}</button>`).join('');
+    }
+    const picking = v.phase === 'pick';
+    $('.opts').querySelectorAll('.opt').forEach((b, i) => {
+      b.disabled = !picking || v.myPick != null;
+      b.classList.toggle('chosen', v.myPick === i);
+      const def = b.querySelector('.def');
+      if (v.myPick === i) {
+        if (!def) b.insertAdjacentHTML('beforeend', '<span class="def">Locked in</span>');
+        else def.textContent = 'Locked in';
+      }
+    });
+    $('.hint').textContent = !picking ? 'Have a read…' : v.myPick != null ? 'Locked in. Watch your mates squirm.' : 'Pick in secret.';
+    requestAnimationFrame(() => { if (G.el && innerWidth < 900) G.el.style.setProperty('--sheet-h', $('.sheet').offsetHeight + 'px'); });
+  }
+
+  function updateGame(v, prev) {
+    const now = Date.now();
+    const stage = Math.max(1, v.stage);
+    if (G.stage !== stage) { setTheme(stage); Board.setCamera(stage, G.stage !== 0); G.stage = stage; }
+    const open = v.phase === 'card' || v.phase === 'pick';
+    G.el.classList.toggle('sheet-open', open);
+    if (open) renderSheet(v);
+
+    // lock ticks, connection
+    v.players.forEach(p => {
+      const col = G.el.querySelector(`.pc[data-id="${CSS.escape(p.id)}"]`);
+      if (!col) return;
+      const was = prev && prev.players.find(q => q.id === p.id);
+      const locked = p.locked && v.phase === 'pick';
+      if (locked && !(was && was.locked) && p.id !== v.me) Sound.play('tick');
+      col.classList.toggle('locked', locked);
+      col.classList.toggle('off', !p.connected);
+    });
+
+    // banners
+    const bb = $('.bb'), sc = $('.stagecard');
+    if (v.phase === 'reveal') { bb.textContent = v.card.title; bb.classList.add('on'); }
+    else if (v.phase === 'spin') { bb.textContent = `🎡 ${v.spotlight === v.me ? 'Your' : nameOf(v.spotlight) + "'s"} spin · the wheel arrives in M5`; bb.classList.add('on'); }
+    else bb.classList.remove('on');
+    if (v.phase === 'stage') {
+      if (G.stageCard !== stage) {
+        G.stageCard = stage;
+        const st = CONFIG.stages[stage - 1];
+        sc.innerHTML = `<div class="emoji">${st.emoji}</div><small>Stage ${stage} of ${CONFIG.stages.length}</small><b>${esc(st.name)}</b>`;
+        sc.classList.remove('off', 'on'); void sc.offsetWidth; sc.classList.add('on');
+        if (prev) Sound.play('stage');
+      }
+    } else if (sc.classList.contains('on')) { sc.classList.remove('on'); sc.classList.add('off'); }
+
+    // the reveal
+    const revealing = v.phase === 'reveal' || v.phase === 'spin';
+    G.el.classList.toggle('revealing', revealing);
+    if (!revealing) G.el.querySelectorAll('.flip').forEach(f => f.classList.remove('shown'));
+    if (v.phase === 'reveal' && G.revealed !== v.round) {
+      G.revealed = v.round;
+      const live = prev && prev.phase === 'pick' && prev.round === v.round && v.left > 3000;
+      runReveal(v, live);
+    }
+    if (v.phase === 'spin' && G.revealed !== v.round) { G.revealed = v.round; runReveal(v, false); }
+
+    if (now >= G.holdStats) applyStats(v, !!prev);
+    if (now >= G.holdTokens) Board.moveAll(spotFor(v), !!prev, 60);
+  }
+
+  function runReveal(v, live) {
+    const R = L.reveal;
+    v.reveal.forEach((r, i) => {
+      const col = G.el.querySelector(`.pc[data-id="${CSS.escape(r.id)}"]`);
+      if (!col) return;
+      const ff = col.querySelector('.ff'), flip = col.querySelector('.flip');
+      ff.innerHTML = `<span>${esc(v.card.options[r.idx].label)}${r.auto ? '<span class="auto">AUTO</span>' : ''}</span>`;
+      if (!live) { flip.classList.add('shown'); return; }
+      flip.classList.remove('shown');
+      later(R.flipStart + i * R.flipGap, () => { flip.classList.add('shown'); Sound.play('flip'); });
+    });
+    if (!live) return;
+    const t0 = Date.now();
+    G.holdStats = t0 + R.floatAt + 50;
+    G.holdTokens = t0 + R.hopAt + 50;
+    later(R.floatAt, () => {
+      const cur = view;
+      let mineDelta = null;
+      v.reveal.forEach(r => {
+        const col = G.el.querySelector(`.pc[data-id="${CSS.escape(r.id)}"]`);
+        if (!col) return;
+        const d = r.delta, box = col.querySelector('.floats');
+        const chips = [];
+        if (d.money) chips.push([signed(d.money, money), d.money > 0]);
+        if (d.health) chips.push([signed(d.health) + ' Health', d.health > 0]);
+        if (d.happiness) chips.push([signed(d.happiness) + ' Happy', d.happiness > 0]);
+        chips.forEach(([text, up], k) => {
+          const f = document.createElement('span');
+          f.className = 'fl ' + (up ? 'up' : 'down');
+          f.textContent = text;
+          f.style.bottom = (k * 26) + 'px';
+          f.style.animationDelay = (k * 0.12) + 's';
+          box.appendChild(f);
+          f.addEventListener('animationend', () => f.remove());
+        });
+        const av = col.querySelector('.av');
+        if (isBigLoss(d)) { av.classList.remove('wobble'); void av.offsetWidth; av.classList.add('wobble'); }
+        if (isBigWin(d)) { const b = av.getBoundingClientRect(); confetti(b.left + b.width / 2, b.top, r.id === v.me ? 40 : 14); }
+        if (r.id === v.me) mineDelta = d;
+      });
+      if (mineDelta) {
+        const tot = Math.sign(mineDelta.money) + Math.sign(mineDelta.health) + Math.sign(mineDelta.happiness);
+        if (isBigLoss(mineDelta)) { shake(G.el); buzz(HAPTIC.bigLoss); Sound.play('loss'); }
+        else Sound.play(tot >= 0 ? 'gain' : 'loss');
+      }
+      if (G.el && inGame(cur)) applyStats(cur, true);
+    });
+    later(R.hopAt, () => { if (G.el && inGame(view)) Board.moveAll(spotFor(view), true, R.hopGap); });
+  }
+
+  function teardownGame() {
+    G.timers.forEach(clearTimeout);
+    G.timers = [];
+    G.el = null;
+    document.documentElement.style.removeProperty('--accent');
+  }
+
+  function tickTimer() {
+    if (!G.el || !view) return;
+    const bar = $('.timer');
+    if (!bar) return;
+    const total = (CONFIG.timings[view.phase] || 1) * 1000;
+    const left = Math.max(0, view.left - (Date.now() - viewAt));
+    bar.firstChild.style.width = (100 * left / total).toFixed(1) + '%';
+    bar.classList.toggle('warn', view.phase === 'pick' && view.myPick == null && left <= L.timerWarn * 1000);
+  }
+  setInterval(tickTimer, 100);
+
+  // =========================================================================
+  // HOST: runs the Sim; sends each player only their own view
+  // =========================================================================
   function createHost(name, resume) {
     const game = resume ? resume.game : Sim.createGame();
     const meId = playerId();
@@ -605,6 +1308,7 @@ const Net = (() => {
       Sim.setConnected(game, id, true, now());
       if (msg.t === 'ready' && Sim.setReady(game, id, msg.on)) broadcast();
       else if (msg.t === 'pick' && Sim.pick(game, id, msg.idx)) broadcast();
+      else if (msg.t === 'colour' && Sim.setColour(game, id, msg.c)) broadcast();
     }
 
     function onClose(conn) {
@@ -624,7 +1328,7 @@ const Net = (() => {
         onError(err) { if (!code) { destroy(); toMenu(Net.describe(err)); } else banner(Net.describe(err)); },
       }, wantCode);
     }
-    let net = startNet(resume ? resume.code : null);
+    const net = startNet(resume ? resume.code : null);
     banner(resume ? `Bringing room ${resume.code} back…` : 'Opening a room…');
 
     const loop = setInterval(() => {
@@ -643,6 +1347,7 @@ const Net = (() => {
       let ok = false;
       if (type === 'ready') ok = Sim.setReady(game, meId, data);
       else if (type === 'pick') ok = Sim.pick(game, meId, data);
+      else if (type === 'colour') ok = Sim.setColour(game, meId, data);
       else if (type === 'start') ok = Sim.start(game, t);
       else if (type === 'again') { Sim.resetToLobby(game); ok = true; }
       if (ok) broadcast();
@@ -650,7 +1355,9 @@ const Net = (() => {
     return { isHost: true, act, destroy, get code() { return code; } };
   }
 
-  // --- client -----------------------------------------------------------------
+  // =========================================================================
+  // CLIENT: sends picks, draws whatever view the host sends
+  // =========================================================================
   function createClient(name, code) {
     let meId = playerId();
     let net = null, conn = null, dead = false, entered = false, attempts = 0;
@@ -693,16 +1400,20 @@ const Net = (() => {
       if (!conn || !conn.open) return;
       if (type === 'ready') conn.send({ t: 'ready', on: data });
       else if (type === 'pick') conn.send({ t: 'pick', idx: data });
+      else if (type === 'colour') conn.send({ t: 'colour', c: data });
     }
     banner(`Joining ${code}…`);
     connect();
     return { isHost: false, act, destroy, code };
   }
 
-  // --- screens ----------------------------------------------------------------
+  // =========================================================================
+  // FLAT SCREENS: menu, lobby, final
+  // =========================================================================
   function toMenu(msg) {
     if (session) session.destroy();
     session = null; view = null;
+    teardownGame();
     menuMsg = msg || '';
     banner('');
     history.replaceState(null, '', location.pathname);
@@ -712,9 +1423,11 @@ const Net = (() => {
   function renderMenu() {
     const name = store.get('log.name') || '';
     const room = Net.cleanCode(new URLSearchParams(location.search).get('room') || '');
-    $app.innerHTML = `
+    const blobs = CONFIG.colours.slice(0, 4).map((c, i) => avatarSVG(c.hex, [5, 4, 2, 0][i])).join('');
+    $app.innerHTML = `<div class="page">
       <h1>Life of<br>Game</h1>
       <p class="muted">Twenty rounds. One lifetime. Four mates who'll happily ruin it.</p>
+      <div class="row" style="justify-content:center;gap:4px;margin:8px 0">${blobs.replace(/<svg /g, '<svg style="width:64px;height:64px" ')}</div>
       <div class="grow"></div>
       <div class="stack">
         <input id="name" maxlength="12" placeholder="Your name" autocomplete="nickname" value="${esc(name)}">
@@ -722,7 +1435,7 @@ const Net = (() => {
         <div class="row"><input id="code" class="code" maxlength="4" placeholder="CODE" value="${esc(room)}" autocapitalize="characters"><button data-act="join">Join</button></div>
         <p class="err">${esc(menuMsg)}</p>
         <p class="muted small center">Version ${CONFIG.version}${Net.available() ? '' : ' · online play unavailable'}</p>
-      </div>`;
+      </div></div>`;
   }
 
   function readName() {
@@ -732,111 +1445,76 @@ const Net = (() => {
     return n;
   }
 
-  function show(v) {
-    view = v; viewAt = Date.now();
-    render();
-  }
-
-  const me = () => view.players.find(p => p.id === view.me) || {};
+  const me = () => (view && view.players.find(p => p.id === view.me)) || {};
   const nameOf = id => { const p = view.players.find(q => q.id === id); return p ? p.name : '?'; };
 
-  function statsBar() {
-    const m = me();
-    return `<div class="stats">
-      <div class="stat m"><span class="k">Money</span><span class="v">${money(m.money)}</span></div>
-      <div class="stat h"><span class="k">Health</span><span class="v">${m.health}</span></div>
-      <div class="stat p"><span class="k">Happy</span><span class="v">${m.happiness}</span></div></div>`;
-  }
-  const topline = () => `<div class="topline"><span>${esc(CONFIG.stages[view.stage - 1].name)}</span><span>Round ${view.round} of ${view.rounds}</span></div>`;
-  const timer = () => `<div class="timer"><i id="bar"></i></div>`;
-
-  function render() {
-    if (!view) return;
-    const v = view;
+  function renderFlat(v) {
     let html = '';
     if (v.phase === 'lobby') {
       const slots = [];
       for (let i = 0; i < CONFIG.maxPlayers; i++) {
         const p = v.players[i];
         slots.push(p
-          ? `<div class="slot"><span>${esc(p.name)}${p.id === v.me ? ' <span class="muted small">(you)</span>' : ''}</span><span class="badge ${p.ready ? 'ok' : ''}">${p.ready ? 'Ready' : 'Not ready'}</span></div>`
+          ? `<div class="slot">${avatarSVG(hexOf(p.colour), 4)}<span>${esc(p.name)}${p.id === v.me ? ' <span class="muted small">(you)</span>' : ''}</span><span class="badge ${p.ready ? 'ok' : ''}">${p.ready ? 'Ready' : 'Not ready'}</span></div>`
           : `<div class="slot empty">Waiting for a mate…</div>`);
       }
-      const ready = me().ready;
+      const m = me();
+      const swatches = CONFIG.colours.map(c => {
+        const taken = v.players.some(p => p.colour === c.id && p.id !== v.me);
+        return `<button class="sw ${m.colour === c.id ? 'mine' : ''} ${taken ? 'taken' : ''}" style="background:${c.hex}" data-act="colour" data-c="${c.id}" ${taken ? 'disabled' : ''} aria-label="${c.id}"></button>`;
+      }).join('');
       html = `
-        <p class="muted center" style="margin-top:24px">Room code</p>
+        <p class="muted center" style="margin-top:20px">Room code</p>
         <div class="bigcode">${esc(session.code || '····')}</div>
         <button class="ghost" data-act="share">Copy invite link</button>
         <div class="slots">${slots.join('')}</div>
+        <p class="muted small center">Pick your colour</p>
+        <div class="swatches">${swatches}</div>
         <div class="grow"></div>
-        <button class="${ready ? '' : 'primary'}" data-act="ready">${ready ? 'Not ready' : "I'm ready"}</button>
+        <button class="${m.ready ? '' : 'primary'}" data-act="ready">${m.ready ? 'Not ready' : "I'm ready"}</button>
         ${session.isHost ? `<button class="primary" data-act="start" ${v.canStart ? '' : 'disabled'}>Start the game</button>
           <p class="muted small center">${v.canStart ? 'Everyone is ready.' : 'Starts when everyone is ready.'}</p>`
           : `<p class="muted small center">The host starts the game when everyone is ready.</p>`}
         <button class="ghost" data-act="leave">Leave</button>`;
-    } else if (v.phase === 'stage') {
-      const st = CONFIG.stages[v.stage - 1];
-      html = `${statsBar()}<div class="hero"><div class="emoji">${st.emoji}</div>
-        <p class="muted">Stage ${v.stage} of ${CONFIG.stages.length}</p><h2>${esc(st.name)}</h2>
-        <p class="muted small">Rounds ${v.round} to ${v.round + v.perStage - 1}</p></div>`;
-    } else if (v.phase === 'card' || v.phase === 'pick') {
-      const picking = v.phase === 'pick';
-      const opts = v.card.options.map((o, i) => `<button class="opt ${v.myPick === i ? 'chosen' : ''}" data-act="pick" data-i="${i}"
-        ${!picking || v.myPick != null ? 'disabled' : ''}>${esc(o.label)}${o.default ? '<span class="def">Default if you run out of time</span>' : ''}</button>`).join('');
-      const ticks = v.players.map(p => `<span class="tick ${p.locked ? 'on' : ''} ${p.connected ? '' : 'off'}">${p.locked ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
-      html = `${statsBar()}${topline()}${timer()}
-        <div class="card stack"><h2>${esc(v.card.title)}</h2><p>${esc(v.card.text)}</p></div>
-        <div class="stack">${opts}</div>
-        <p class="muted small center">${!picking ? 'Have a read…' : v.myPick != null ? 'Locked in. Waiting for the others.' : 'Pick in secret.'}</p>
-        <div class="ticks">${ticks}</div>`;
-    } else if (v.phase === 'reveal' || v.phase === 'spin') {
-      if (v.phase === 'reveal') {
-        const rows = v.reveal.map((r, i) => {
-          const d = r.delta;
-          const chips = [
-            d.money ? `<span class="d ${d.money > 0 ? 'up' : 'down'}">${signed(d.money, money)}</span>` : '',
-            d.health ? `<span class="d ${d.health > 0 ? 'up' : 'down'}">${signed(d.health)} health</span>` : '',
-            d.happiness ? `<span class="d ${d.happiness > 0 ? 'up' : 'down'}">${signed(d.happiness)} happy</span>` : '',
-          ].join('') || '<span class="d">No change</span>';
-          return `<div class="revrow" style="animation-delay:${0.15 + i * 0.35}s">
-            <div class="who">${esc(nameOf(r.id))}${r.id === v.me ? ' <span class="muted small">(you)</span>' : ''}${r.auto ? '<span class="tag">AUTO</span>' : ''}</div>
-            <div class="what">${esc(v.card.options[r.idx].label)}</div><div class="deltas">${chips}</div></div>`;
-        }).join('');
-        html = `${statsBar()}${topline()}${timer()}<h2>${esc(v.card.title)}</h2><div class="rev">${rows}</div>`;
-      } else {
-        const mine = v.spotlight === v.me;
-        html = `${statsBar()}${topline()}${timer()}<div class="hero"><div class="emoji">🎡</div>
-          <p class="muted">Spotlight</p><h2>${mine ? "You're up!" : esc(nameOf(v.spotlight)) + "'s spin"}</h2>
-          <p class="muted small">The wheel arrives in milestone 5.</p></div>`;
-      }
     } else if (v.phase === 'final') {
-      const rows = v.standings.map((s, i) => `<div class="card rank"><span class="n">${i + 1}</span>
-        <div><div style="font-weight:750">${esc(nameOf(s.id))}</div>
-        <div class="muted small">${s.money} money · ${s.health} health · ${s.happiness} happy</div></div>
-        <span class="s">${s.total}</span></div>`).join('');
-      html = `<div class="center" style="margin-top:24px"><div class="emoji">🏆</div><h2>${esc(nameOf(v.standings[0].id))} lived best</h2>
+      const rows = v.standings.map((s, i) => {
+        const p = v.players.find(q => q.id === s.id);
+        return `<div class="card rank"><span class="n">${i + 1}</span>${avatarSVG(hexOf(p.colour), p.mood)}
+          <div><div style="font-weight:900">${esc(p.name)}${i === 0 ? ' 👑' : ''}</div>
+          <div class="muted small">${s.money} money · ${s.health} health · ${s.happiness} happy</div></div>
+          <span class="s">${s.total}</span></div>`;
+      }).join('');
+      html = `<div class="center" style="margin-top:20px"><div class="emoji">🏆</div><h2>${esc(nameOf(v.standings[0].id))} lived best</h2>
         <p class="muted small">Life Score = money ÷ £500 (capped) + health + happiness</p></div>
         <div class="stack">${rows}</div><div class="grow"></div>
         ${session.isHost ? '<button class="primary" data-act="again">Play again</button>' : '<p class="muted center small">Waiting for the host to start another life.</p>'}
         <button class="ghost" data-act="leave">Leave</button>`;
     }
-    $app.innerHTML = html;
-    tickTimer();
+    $app.innerHTML = `<div class="page">${html}</div>`;
   }
 
-  function tickTimer() {
-    const bar = document.getElementById('bar');
-    if (!bar || !view) return;
-    const total = (CONFIG.timings[view.phase] || 1) * 1000;
-    const left = Math.max(0, view.left - (Date.now() - viewAt));
-    bar.style.width = (100 * left / total).toFixed(1) + '%';
+  function show(v) {
+    const prev = view;
+    view = v; viewAt = Date.now();
+    if (inGame(v)) {
+      if (!G.el) buildGame(v);
+      updateGame(v, inGame(prev) ? prev : null);
+    } else {
+      const wasGame = !!G.el;
+      teardownGame();
+      renderFlat(v);
+      if (v.phase === 'final' && (wasGame || (prev && prev.phase !== 'final'))) {
+        Sound.play('jackpot');
+        confetti(innerWidth / 2, innerHeight * 0.3, L.confettiMax);
+      }
+    }
   }
-  setInterval(tickTimer, 250);
 
   $app.addEventListener('click', e => {
     const b = e.target.closest('button[data-act]');
     if (!b || b.disabled) return;
     const a = b.dataset.act;
+    if (a !== 'pick') Sound.play('tap');
     if (a === 'host' || a === 'join') {
       if (session) return;
       const n = readName();
@@ -848,11 +1526,19 @@ const Net = (() => {
         if (c.length !== 4) { menuMsg = 'Room codes are 4 letters.'; renderMenu(); return; }
         session = createClient(n, c);
       }
-    } else if (!session) return;
+    } else if (a === 'mute') { b.textContent = Sound.toggle() ? '🔇' : '🔊'; }
+    else if (!session) return;
     else if (a === 'ready') session.act('ready', !me().ready);
+    else if (a === 'colour') session.act('colour', b.dataset.c);
     else if (a === 'start') session.act('start');
     else if (a === 'again') session.act('again');
-    else if (a === 'pick') { session.act('pick', +b.dataset.i); if (navigator.vibrate) navigator.vibrate(20); }
+    else if (a === 'pick') {
+      // Show the choice straight away; the host's view confirms it.
+      b.classList.add('chosen', 'boing');
+      b.parentNode.querySelectorAll('.opt').forEach(o => { o.disabled = true; });
+      Sound.play('lock'); buzz(HAPTIC.lock);
+      session.act('pick', +b.dataset.i);
+    }
     else if (a === 'leave') toMenu();
     else if (a === 'share') {
       const url = location.origin + location.pathname + '?room=' + session.code;
@@ -860,7 +1546,7 @@ const Net = (() => {
         () => { b.textContent = 'Link copied'; }, () => { b.textContent = url; });
     }
   });
-  addEventListener('pagehide', e => { if (session && !e.persisted) { /* keep the saved state for a refresh */ } });
+  addEventListener('resize', () => { if (G.el && view && (view.phase === 'card' || view.phase === 'pick')) G.el.style.setProperty('--sheet-h', $('.sheet').offsetHeight + 'px'); });
 
   // A refresh brings you back: the host re-opens the same room, a player rejoins it.
   (function resume() {
